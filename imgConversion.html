@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片格式转换</title>
+</head>
+<body>
+    <input type="file" id="inputimg">
+    <select id="myselect">
+        <option value="1">webp格式</option>
+      <option value="2">jpeg格式</option>
+      <option value="3">png格式</option> 
+    </select>
+    <button id="start">开始转换</button>
+    <p>预览：</p>
+    <img id="imgShow" src="" alt="">
+</body>
+<script>
+    /*事件*/
+    document.getElementById('start').addEventListener('click', function(){
+        getImg(function(image){
+            var can=imgToCanvas(image),
+              imgshow=document.getElementById("imgShow");
+            imgshow.setAttribute('src',canvasToImg(can));
+        });
+    });
+    // 把image 转换为 canvas对象 
+    function imgToCanvas(image) {   
+      var canvas = document.createElement("canvas"); 
+      canvas.width = image.width; 
+      canvas.height = image.height;  
+      canvas.getContext("2d").drawImage(image, 0, 0);  
+      return canvas; 
+    } 
+    //canvas转换为image
+    function canvasToImg(canvas) {
+        var array=["image/webp","image/jpeg","image/png"],
+          type=document.getElementById('myselect').value-1;
+      var src = canvas.toDataURL(array[type]);
+      return src;
+    }
+    //获取图片信息
+    function getImg(fn){
+        var imgFile = new FileReader();
+        try{
+            imgFile.onload = function(e) {
+                var image = new Image();
+                image.src= e.target.result; //base64数据 
+                image.onload=function(){
+                    fn(image);
+                }
+            }
+            imgFile.readAsDataURL(document.getElementById('inputimg').files[0]);
+        }catch(e){
+            console.log("请上传图片！"+e);
+        }
+    }
+</script>
+</html>
